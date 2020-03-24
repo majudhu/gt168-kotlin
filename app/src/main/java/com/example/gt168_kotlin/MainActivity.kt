@@ -20,24 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     fun onGetPermission(view: View) {
 
-        val usbManager = applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
-        val device = usbManager.deviceList.values.firstOrNull { it.vendorId == 0x2009 && it.productId == 0x7638 }!!
-        val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, Intent("test.maju.gt168-kotlin.USB_PERMISSION"), 0)
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(applicationContext: Context, intent: Intent) {
-                applicationContext.unregisterReceiver(this)
-                if (intent.action == "test.maju.gt168-kotlin.USB_PERMISSION") {
-                    if (intent.getBooleanExtra(
-                                    UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        Toast.makeText(applicationContext, "USB Permission Granted", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(applicationContext, "USB Permission Denied", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-        applicationContext.registerReceiver(receiver, IntentFilter("test.maju.gt168-kotlin.USB_PERMISSION"))
-        usbManager.requestPermission(device, pendingIntent)
     }
 
     fun onTest(view: View) {
