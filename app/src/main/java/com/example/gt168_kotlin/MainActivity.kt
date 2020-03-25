@@ -15,7 +15,6 @@ import kotlinx.coroutines.*
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private val SCOPE_MAIN = CoroutineScope(Job() + Dispatchers.Main)
     }
 
     private val usbManager =
@@ -62,8 +61,8 @@ class MainActivity : AppCompatActivity() {
 
     fun openDevice(view: View) {
         if (usbManager.hasPermission(GT168Controller.getDevice(usbManager))) {
-            SCOPE_MAIN.launch {
-                if (controller?.sendCommandPacket() == true) {
+            MainScope().launch {
+                if (controller?.testConnection() == true) {
                     btnOpen.isEnabled = false;
                     txtStatus.text = "Open device successful"
                     listOf<Button>(
