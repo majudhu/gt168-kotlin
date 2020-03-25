@@ -28,6 +28,15 @@ class GT168Controller(private val usbManager: UsbManager, private val device: Us
         private const val CMD_DAT_PKT_PRFX = 0xA55A // command data packet prefix (in)
         private const val RES_DAT_PKT_PRFX = 0xA55A // response data packet prefix (in)
 
+        private const val CMD_ENROLL = 0x0103
+        private const val CMD_VERIFY = 0x0101
+        private const val CMD_IDENTIFY = 0x0102
+        private const val CMD_IDENTIFY_FREE = 0x0125
+        private const val CMD_ENROLL_ONE_TIME = 0x0104
+        private const val CMD_CHANGE_TEMPLATE = 0x0129
+        private const val CMD_FP_CANCEL = 0x0130
+        private const val CMD_CLEAR_TEMPLATE = 0x0105
+        private const val CMD_CLEAR_ALL_TEMPLATES = 0x0106
         private const val CMD_TEST_CONNECTION = 0x0150
 
         val CBW_DATA_OUT get() = byteArrayOf(0xEF.toByte(), 0x11, 0x00, 0x00, 0x18)
@@ -137,8 +146,8 @@ class GT168Controller(private val usbManager: UsbManager, private val device: Us
     }
 
     suspend fun testConnection(): Boolean {
-        val res = sendCommandPacket(CMD_TEST_CONNECTION)
-        return (res[6].toInt() == 0 && res[7].toInt() == 0)
+        val response = sendCommandPacket(CMD_TEST_CONNECTION)
+        return (response[6].toInt() == 0 && response[7].toInt() == 0)
     }
 
 }
