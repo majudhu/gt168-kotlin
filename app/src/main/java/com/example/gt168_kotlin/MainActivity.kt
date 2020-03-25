@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     fun openDevice(view: View) {
         if (usbManager.hasPermission(GT168Controller.getDevice(usbManager))) {
             SCOPE_MAIN.launch {
-                if (controller?.testConnection() == true) {
+                if (controller?.sendCommandPacket() == true) {
                     btnOpen.isEnabled = false;
                     txtStatus.text = "Open device successful"
                     listOf<Button>(
