@@ -2,14 +2,19 @@ package com.example.gt168_kotlin
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
-import android.content.*
-import android.hardware.usb.*
-import androidx.appcompat.app.AppCompatActivity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity() {
@@ -17,23 +22,26 @@ class MainActivity : AppCompatActivity() {
     companion object {
     }
 
-    private val usbManager =
-        applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
+    private lateinit var usbManager: UsbManager
 
     private var controller: GT168Controller? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        usbManager = applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
         getPermission()
     }
 
 
     private fun getPermission() {
         val intentAction = "test.maju.gt168_kotlin.USB_PERMISSION"
-        val usbManager =
-            applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
         val device = GT168Controller.getDevice(usbManager)
+        if (device == null) {
+            Toast.makeText(applicationContext, "FP Device not found", Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
         val intent =
             PendingIntent.getBroadcast(
                 applicationContext,
@@ -46,11 +54,19 @@ class MainActivity : AppCompatActivity() {
                 applicationContext.unregisterReceiver(this)
                 if (intent.action == intentAction) {
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        controller = device?.let { GT168Controller(usbManager, it) }
-                        Toast.makeText(applicationContext, "Permission Granted", Toast.LENGTH_SHORT)
+                        controller = GT168Controller(usbManager, device)
+                        Toast.makeText(
+                            applicationContext,
+                            "Permission Granted",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     } else
-                        Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            applicationContext,
+                            "Permission Denied",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                 }
             }
